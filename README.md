@@ -1,9 +1,6 @@
-<!-- PLACEHOLDER · icon: docs/images/icon.svg does not exist in this repo yet.
-     Export the bundle's Contents/Resources/assets/az-icon.pdf to docs/images/icon.svg, then replace this comment with:
 <p align="center">
   <img src="docs/images/icon.svg" alt="AZ Letter Proofer" width="120">
 </p>
--->
 
 <h1 align="center">AZ Letter Proofer</h1>
 
