@@ -1,8 +1,8 @@
-"""AZ Letter Proofer — digs up optimal test words for type design.
+"""AZ Letter Digger — digs up optimal test words for type design.
 
 General Plugin shell: adds a Window ▸ AZ Toolkit item (with the bundled
-assets/az-icon.pdf art) that opens the AZ Letter Proofer window. All real work lives
-in azletterproofer_ui (window/Glyphs glue) and azletterproofer_engine (pure
+assets/az-icon.pdf art) that opens the AZ Letter Digger window. All real work lives
+in azletterdigger_ui (window/Glyphs glue) and azletterdigger_engine (pure
 scoring logic).
 """
 
@@ -187,10 +187,10 @@ def _install_az_toolkit_item(menu_item) -> None:
     submenu.insertItem_atIndex_(menu_item, insert_at)
 
 
-class AZLetterProofer(GeneralPlugin):
+class AZLetterDigger(GeneralPlugin):
     @objc.python_method
     def settings(self):
-        self.name = "AZ Letter Proofer"
+        self.name = "AZ Letter Digger"
         self.window = None
 
     @objc.python_method
@@ -207,20 +207,20 @@ class AZLetterProofer(GeneralPlugin):
 
         # Tab in Glyphs ▸ Settings ▸ AZ Toolkit: show/hide the dice, its colour.
         try:
-            from azletterproofer_settings import register_preferences_pane
+            from azletterdigger_settings import register_preferences_pane
 
             register_preferences_pane(
                 lambda: self.window if self.window is not None and self.window.is_open() else None
             )
         except Exception:
-            print(f"AZ Letter Proofer settings error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger settings error:\n{traceback.format_exc()}")
 
-        # Bridge: other plugins (AZ Classifier) can ask AZ Letter Proofer to proof a tag
+        # Bridge: other plugins (AZ Classifier) can ask AZ Letter Digger to proof a tag
         # group by posting this notification with {"tag": <title>}.
         from AppKit import NSNotificationCenter
 
         NSNotificationCenter.defaultCenter().addObserver_selector_name_object_(
-            self, "digTagNotification:", "com.hugojourdan.AZLetterProofer.dig", None
+            self, "digTagNotification:", "com.hugojourdan.AZLetterDigger.dig", None
         )
 
     def digTagNotification_(self, notification):
@@ -232,21 +232,21 @@ class AZLetterProofer(GeneralPlugin):
                 self.window.dig_tag(tag)
         except Exception:
             Glyphs.showMacroWindow()
-            print(f"AZ Letter Proofer dig-tag error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger dig-tag error:\n{traceback.format_exc()}")
 
     def showWindow_(self, sender):
         try:
             # Lazy import keeps app launch fast and surfaces import errors
             # in the Macro panel instead of silently disabling the plugin.
-            from azletterproofer_ui import AZLetterProoferWindow
+            from azletterdigger_ui import AZLetterDiggerWindow
 
             if self.window is None or not self.window.is_open():
-                self.window = AZLetterProoferWindow()
+                self.window = AZLetterDiggerWindow()
             else:
                 self.window.bring_to_front()
         except Exception:
             Glyphs.showMacroWindow()
-            print(f"AZ Letter Proofer error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger error:\n{traceback.format_exc()}")
 
     @objc.python_method
     def __file__(self):

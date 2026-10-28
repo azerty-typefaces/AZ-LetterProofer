@@ -7,11 +7,11 @@
 	<key>CFBundleExecutable</key>
 	<string>plugin</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.hugojourdan.AZLetterProofer</string>
+	<string>com.hugojourdan.AZLetterDigger</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>AZ Letter Proofer</string>
+	<string>AZ Letter Digger</string>
 	<key>CFBundleShortVersionString</key>
 	<string>0.1</string>
 	<key>CFBundleVersion</key>
@@ -19,7 +19,7 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2026 Hugo Jourdan</string>
 	<key>NSPrincipalClass</key>
-	<string>AZLetterProofer</string>
+	<string>AZLetterDigger</string>
 	<key>PyMainFileNames</key>
 	<array>
 		<string>plugin.py</string>

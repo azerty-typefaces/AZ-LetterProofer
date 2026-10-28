@@ -1,4 +1,4 @@
-"""3D glyph dice for the AZ Letter Proofer window.
+"""3D glyph dice for the AZ Letter Digger window.
 
 A rounded dodecahedron (d12) rendered with SceneKit, one glyph per face,
 tumbling. Faces are PBR materials: a solid body colour over the bundled
@@ -71,7 +71,7 @@ DICE_CANVAS_BACKGROUND = (30 / 255, 30 / 255, 30 / 255)  # a step darker: a rece
 DICE_CANVAS_BACKGROUND_LIGHT = (1.0, 1.0, 1.0)
 GLOW_COLOR = (0.092, 0.091, 0.206)  # plain letters, deep indigo
 HIGHLIGHT_GLOW_COLOR = (0.135, 0.086, 0.483)  # focus letter, violet
-AURA_NODE_NAME = "AZLetterProoferHighlightAura"
+AURA_NODE_NAME = "AZLetterDiggerHighlightAura"
 # Crack light: a dim omni above the focus face, spilling its glow onto the plastic.
 CRACK_LUMENS = 10.0
 CRACK_HEIGHT = 1.902  # height above the face; higher = broader
@@ -140,7 +140,7 @@ CAMERA_TILT = -0.15  # gentle look-down so the upper faces show
 ZOOM_RANGE = (0.5, 2.5)  # orthographic-scale clamp for Option-scroll / pinch
 OPTION_FLAG = 1 << 19  # NSEventModifierFlagOption
 DICE_ROTATE_SENSITIVITY = 0.012  # radians per two-finger scroll point
-IDLE_TUMBLE_KEY = "AZLetterProoferIdleTumble"
+IDLE_TUMBLE_KEY = "AZLetterDiggerIdleTumble"
 FOCUS_FRONT_SECONDS = 0.45  # ease when a letter change turns face 0 to the front
 
 ASSETS_DIR = Path(__file__).parent / "assets"
@@ -915,7 +915,7 @@ def make_dice_scene(
     # The tumble spins the dice; two-finger scroll turns this pivot, so the two
     # rotations compose instead of fighting over one transform.
     pivot = SK.SCNNode.node()
-    pivot.setName_("AZLetterProoferDicePivot")
+    pivot.setName_("AZLetterDiggerDicePivot")
     pivot.addChildNode_(dice)
     root.addChildNode_(pivot)
     dice.runAction_forKey_(_idle_tumble_action(), IDLE_TUMBLE_KEY)
@@ -959,15 +959,15 @@ def _dice_view_class():
 
     # ObjC class names are process-wide: reuse the class on a module re-import.
     try:
-        _DICE_VIEW_CLASS = objc.lookUpClass("AZLetterProoferDiceView")
+        _DICE_VIEW_CLASS = objc.lookUpClass("AZLetterDiggerDiceView")
         return _DICE_VIEW_CLASS
     except objc.error:
         pass
 
-    class AZLetterProoferDiceView(SK.SCNView):
+    class AZLetterDiggerDiceView(SK.SCNView):
         def viewDidChangeEffectiveAppearance(self):
             with contextlib.suppress(Exception):
-                objc.super(AZLetterProoferDiceView, self).viewDidChangeEffectiveAppearance()
+                objc.super(AZLetterDiggerDiceView, self).viewDidChangeEffectiveAppearance()
             with contextlib.suppress(Exception):
                 scene = self.scene()
                 if scene is not None:
@@ -1029,7 +1029,7 @@ def _dice_view_class():
                     return
                 except Exception:
                     pass
-            objc.super(AZLetterProoferDiceView, self).scrollWheel_(event)
+            objc.super(AZLetterDiggerDiceView, self).scrollWheel_(event)
 
         def magnifyWithEvent_(self, event):
             try:
@@ -1043,7 +1043,7 @@ def _dice_view_class():
         def rotateWithEvent_(self, event):
             pass  # eat two-finger rotate
 
-    _DICE_VIEW_CLASS = AZLetterProoferDiceView
+    _DICE_VIEW_CLASS = AZLetterDiggerDiceView
     return _DICE_VIEW_CLASS
 
 

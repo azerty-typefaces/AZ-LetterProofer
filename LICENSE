@@ -2,7 +2,7 @@ MIT License
 
 Copyright (c) 2026 Hugo Jourdan
 
-AZ Letter Proofer's design and feature set revive ideas from word-o-mat,
+AZ Letter Digger's design and feature set revive ideas from word-o-mat,
 Copyright (c) Nina Stössinger (MIT License, https://github.com/ninastoessinger/word-o-mat),
 with the Glyphs port by Georg Seifert.
 
@@ -26,7 +26,7 @@ SOFTWARE.
 
 ---
 
-Bundled wordlist data (AZ-LetterProofer.glyphsPlugin/Contents/Resources/data/wordlists/)
+Bundled wordlist data (AZ-LetterDigger.glyphsPlugin/Contents/Resources/data/wordlists/)
 is derived from the FrequencyWords project
 (https://github.com/hermitdave/FrequencyWords, OpenSubtitles 2018 corpus) and is
 licensed separately under CC-BY-SA 4.0
@@ -37,7 +37,7 @@ shared under the same license.
 
 ---
 
-Bundled orthography data (AZ-LetterProofer.glyphsPlugin/Contents/Resources/data/orthographies.json)
+Bundled orthography data (AZ-LetterDigger.glyphsPlugin/Contents/Resources/data/orthographies.json)
 is derived from Hyperglot by Rosetta (https://github.com/rosettatype/hyperglot), licensed
 under the Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0). It was modified
 by keeping, for each bundled language, the letters of every orthography's base and
@@ -45,6 +45,6 @@ auxiliary alphabets.
 
 ---
 
-The bundled surface texture (AZ-LetterProofer.glyphsPlugin/Contents/Resources/assets/Roughness.jpg)
+The bundled surface texture (AZ-LetterDigger.glyphsPlugin/Contents/Resources/assets/Roughness.jpg)
 is from AmbientCG (https://ambientcg.com), released under the Creative Commons CC0 1.0 license
 (public domain): the Plastic015A roughness map, downsampled to 640px.

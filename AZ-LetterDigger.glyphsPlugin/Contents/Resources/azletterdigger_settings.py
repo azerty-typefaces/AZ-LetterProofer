@@ -1,4 +1,4 @@
-"""AZ Letter Proofer's tab in Glyphs ▸ Settings ▸ AZ Toolkit: show or hide the
+"""AZ Letter Digger's tab in Glyphs ▸ Settings ▸ AZ Toolkit: show or hide the
 3D dice and pick its colour, the same choices as the window's right-click menu.
 
 Every control writes the window's own preferences (keys below), and
@@ -47,8 +47,8 @@ from AppKit import (
 )
 from GlyphsApp import Glyphs
 
-# Preference keys and defaults, shared with the window (azletterproofer_ui).
-PREFS = "com.hugojourdan.AZLetterProofer."
+# Preference keys and defaults, shared with the window (azletterdigger_ui).
+PREFS = "com.hugojourdan.AZLetterDigger."
 
 DEFAULTS = {
     "letters": "a",
@@ -109,10 +109,10 @@ _PANE_ADDED = False
 _PANE_VC = None
 _PANE_VIEW = None
 
-_PANE_IDENTIFIER = "AZ Letter Proofer"
+_PANE_IDENTIFIER = "AZ Letter Digger"
 
 
-class AZLetterProoferSettingsView:
+class AZLetterDiggerSettingsView:
     """Builds the vanilla pane; edits go to the window's preferences."""
 
     WIDTH = 300
@@ -173,11 +173,11 @@ class AZLetterProoferSettingsView:
             traceback.print_exc()
 
 
-class AZLetterProoferPreferencesController(NSViewController):
+class AZLetterDiggerPreferencesController(NSViewController):
     """NSViewController wrapper that gives the pane a fixed size."""
 
-    def initWithSettingsView_(self, settings_view: AZLetterProoferSettingsView) -> object:
-        self = objc.super(AZLetterProoferPreferencesController, self).init()
+    def initWithSettingsView_(self, settings_view: AZLetterDiggerSettingsView) -> object:
+        self = objc.super(AZLetterDiggerPreferencesController, self).init()
         if self is None:
             return None
         self._settings_view = settings_view
@@ -204,19 +204,40 @@ class AZLetterProoferPreferencesController(NSViewController):
 # ---- AZ Toolkit shared Settings hub (protocol v1) ----------------------
 # One "AZ Toolkit" entry in Glyphs > Settings, each AZ plugin's pane a tab in
 # it (a popup over a tabless NSTabView). The first plugin to load creates the
-# hub and parks it in the main thread's dictionary under _HUB_KEY.
+# hub and parks it in the main thread's dictionary under _HUB_KEY. The hub
+# takes the SELECTED pane's size, not the largest (v1.2): Glyphs' Settings
+# window follows preferredContentSize live, top edge fixed.
 _HUB_KEY = "AZToolkit.SettingsHub.v1"
 _HUB_TITLE = "AZ Toolkit"
 _HUB_BADGE = "\U001001fb"  # SF Symbol checkmark seal, one astral codepoint
 _POPUP_BAR_H = 41.0  # 10 top + 25 popup + 6 gap
 
 
-class AZLetterProoferToolkitHub(NSViewController):
+def _open_settings_on(controller: Any) -> None:
+    """Open Glyphs > Settings on a pane added with addViewToPreferences:.
+
+    Glyphs 3 files the pane under its title, Glyphs 4 under its CLASS NAME, and an
+    identifier it does not know raises — so the title is tried first and the
+    class name catches the raise.
+    """
+    delegate = NSApplication.sharedApplication().delegate()
+    if delegate is None or not delegate.respondsToSelector_(b"showMainPreferencesWithIdentifier:"):
+        return
+    for identifier in (controller.title(), controller.className()):
+        try:
+            delegate.showMainPreferencesWithIdentifier_(identifier)
+            return
+        except Exception:
+            continue
+
+
+class AZLetterDiggerToolkitHub(NSViewController):
     def init(self) -> object:
-        self = objc.super(AZLetterProoferToolkitHub, self).init()
+        self = objc.super(AZLetterDiggerToolkitHub, self).init()
         if self is None:
             return None
         self._panes = []
+        self._sizes = {}  # tab identifier -> the pane's designed (width, height)
         self.setTitle_(_HUB_TITLE)
         self.setRepresentedObject_(_HUB_TITLE)
         self.setPreferredContentSize_(NSMakeSize(360.0, 240.0))
@@ -242,6 +263,7 @@ class AZLetterProoferToolkitHub(NSViewController):
     def azToolkitPopupChanged_(self, sender: Any) -> None:
         try:
             self._tabs.selectTabViewItemAtIndex_(sender.indexOfSelectedItem())
+            self._fit_selected()
         except Exception:
             pass
 
@@ -275,6 +297,7 @@ class AZLetterProoferToolkitHub(NSViewController):
             view = pane.view()
             if size.width < 1 or size.height < 1:
                 size = view.frame().size
+            self._sizes[str(ident)] = (float(size.width), float(size.height))
             # Pin the pane at its designed size, top-left; the flexible
             # right/bottom margins absorb the stretch NSTabView applies.
             container = NSView.alloc().initWithFrame_(NSMakeRect(0, 0, size.width, size.height))
@@ -302,7 +325,7 @@ class AZLetterProoferToolkitHub(NSViewController):
                 self._popup.itemAtIndex_(insert_at).setAttributedTitle_(text)
             self._panes.append(pane)  # retain: AppKit must not dealloc it
             self._popup.selectItemAtIndex_(tabs.indexOfTabViewItem_(tabs.selectedTabViewItem()))
-            self._recalc_preferred_size()
+            self._fit_selected()
         except Exception:
             traceback.print_exc()
 
@@ -371,28 +394,26 @@ class AZLetterProoferToolkitHub(NSViewController):
                     tabs.selectTabViewItemAtIndex_(index)
                     self._popup.selectItemAtIndex_(index)
                     break
+            self._fit_selected()
         except Exception:
             pass
         try:
-            delegate = NSApplication.sharedApplication().delegate()
-            if delegate is not None and delegate.respondsToSelector_(
-                b"showMainPreferencesWithIdentifier:"
-            ):
-                delegate.showMainPreferencesWithIdentifier_(_HUB_TITLE)
+            _open_settings_on(self)
         except Exception:
             pass
 
     @objc.python_method
-    def _recalc_preferred_size(self) -> None:
+    def _fit_selected(self) -> None:
+        """Size the hub to the selected pane (v1.2). AppKit pins the hub's view to
+        preferredContentSize, so a shown Settings window resizes with it."""
         try:
-            max_width, max_height = 300.0, 200.0
-            for pane in self._panes:
-                size = pane.preferredContentSize()
-                if size.width < 1 or size.height < 1:
-                    size = pane.view().frame().size
-                max_width = max(max_width, size.width)
-                max_height = max(max_height, size.height)
-            self.setPreferredContentSize_(NSMakeSize(max_width, max_height + _POPUP_BAR_H))
+            item = self._tabs.selectedTabViewItem()
+            if item is None:
+                return
+            width, height = self._sizes.get(str(item.identifier()), (300.0, 200.0))
+            self.setPreferredContentSize_(
+                NSMakeSize(max(300.0, width), max(200.0, height) + _POPUP_BAR_H)
+            )
         except Exception:
             traceback.print_exc()
 
@@ -407,7 +428,7 @@ def _toolkit_hub() -> Any:
         delegate = NSApplication.sharedApplication().delegate()
         if delegate is None or not delegate.respondsToSelector_(b"addViewToPreferences:"):
             return None
-        hub = AZLetterProoferToolkitHub.alloc().init()
+        hub = AZLetterDiggerToolkitHub.alloc().init()
         if hub is None:
             return None
         pool.setObject_forKey_(hub, _HUB_KEY)  # retained here for the app's lifetime
@@ -425,11 +446,11 @@ def sync_pane() -> None:
 
 
 def register_preferences_pane(live_window: Callable[[], Any]) -> None:
-    """Add the AZ Letter Proofer pane to Glyphs > Settings, once per app session.
+    """Add the AZ Letter Digger pane to Glyphs > Settings, once per app session.
 
     The pane lands as a tab in the shared "AZ Toolkit" entry (see the hub above);
     if the hub can't be built, fall back to registering a standalone pane.
-    ``live_window`` returns the open proofer window, or None.
+    ``live_window`` returns the open Letter Digger window, or None.
     """
     global _PANE_ADDED, _PANE_VC, _PANE_VIEW
     if _PANE_ADDED:
@@ -442,8 +463,8 @@ def register_preferences_pane(live_window: Callable[[], Any]) -> None:
         return
     try:
         register_defaults()  # the pane reads them before any window registers them
-        settings_view = AZLetterProoferSettingsView(live_window)
-        controller = AZLetterProoferPreferencesController.alloc().initWithSettingsView_(
+        settings_view = AZLetterDiggerSettingsView(live_window)
+        controller = AZLetterDiggerPreferencesController.alloc().initWithSettingsView_(
             settings_view
         )
         if controller is None:

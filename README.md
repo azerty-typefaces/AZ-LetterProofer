@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/images/icon.svg" alt="AZ Letter Proofer" width="120">
+  <img src="docs/images/icon.svg" alt="AZ Letter Digger" width="120">
 </p>
 
-<h1 align="center">AZ Letter Proofer</h1>
+<h1 align="center">AZ Letter Digger</h1>
 
 <p align="center">
   <strong>Find optimal words to proof a specific letter.</strong>
@@ -24,25 +24,27 @@
 
 
 <p align="center">
-   <img src="docs/images/hero.png"  alt="AZ Letter Proofer finding words for a letter and opening them in an Edit tab" width="720">
+   <img src="docs/images/hero.png"  alt="AZ Letter Digger finding words for a letter and opening them in an Edit tab" width="720">
 </p>
 
 
 
-AZ Letter Proofer is a [GlyphsApp](https://glyphsapp.com/) plugin that finds the words to proof a letter with. Where [word-o-mat](https://github.com/ninastoessinger/word-o-mat) picks random words that match, AZ Letter Proofer ranks them. Turn **Smart ranking** off to get random words instead.
+AZ Letter Digger is a [GlyphsApp](https://glyphsapp.com/) plugin that finds the words to proof a letter with. Where [word-o-mat](https://github.com/ninastoessinger/word-o-mat) picks random words that match, AZ Letter Digger ranks them. Turn **Smart ranking** off to get random words instead.
 
 
 <br>
 
 ## Getting started
 
-1. Install AZ Letter Proofer with the link for your Glyphs version:
-   - **Glyphs 3:** [Install in Glyphs 3](https://azerty-typefaces.github.io/AZ-LetterProofer/install.html?v=3)
-   - **Glyphs 4:** [Install in Glyphs 4](https://azerty-typefaces.github.io/AZ-LetterProofer/install.html?v=4)
+1. Install AZ Letter Digger with the link for your Glyphs version:
+   - **Glyphs 3:** [Install in Glyphs 3](https://azerty-typefaces.github.io/AZ-LetterDigger/install.html?v=3)
+   - **Glyphs 4:** [Install in Glyphs 4](https://azerty-typefaces.github.io/AZ-LetterDigger/install.html?v=4)
 
-   Or open *Window ▸ Plugin Manager*, find **AZ Letter Proofer** and click *Install*.
+   Or open *Window ▸ Plugin Manager*, find **AZ Letter Digger** and click *Install*.
 2. Restart Glyphs.
-3. Open a font, then *Window ▸ AZ Toolkit ▸ Letter Proofer*.  
+3. Open a font, then *Window ▸ AZ Toolkit ▸ Letter Digger*.  
+
+> Coming from AZ Letter Proofer 0.1? The plugin was renamed: delete `AZ-LetterProofer.glyphsPlugin` from your Glyphs Plugins folder, then restart Glyphs.
 
 
 <br>
@@ -50,7 +52,7 @@ AZ Letter Proofer is a [GlyphsApp](https://glyphsapp.com/) plugin that finds the
 ## The window
 
 <p align="center">
-   <img src="docs/images/ui.png"  alt="AZ Letter Proofer finding words for a letter and opening them in an Edit tab" width="300">
+   <img src="docs/images/ui.png"  alt="AZ Letter Digger finding words for a letter and opening them in an Edit tab" width="300">
 </p>
 
 | Control | Does |
@@ -79,7 +81,7 @@ Words are 3 to 11 letters long. Every setting is remembered between sessions.
 | Option | Does |
 | --- | --- |
 | **None** | Plain ranking |
-| **Ascender, Bowl, Crossbar…** | A construction group from AZ Letter Proofer's built-in letter ratings. Words built from that group's letters rank higher |
+| **Ascender, Bowl, Crossbar…** | A construction group from AZ Letter Digger's built-in letter ratings. Words built from that group's letters rank higher |
 | **Tag: …** | One entry per tag on your font's glyphs. See *Proofing several glyphs* |
 
 The Feature you pick also decides which glyphs fill the other faces of the dice.
@@ -125,7 +127,7 @@ The sliders start at 0, which leaves them out of the ranking. They go from −2 
 
 ## Feedback
 
-Bugs and ideas go to the [issue tracker](https://github.com/azerty-typefaces/AZ-LetterProofer/issues).
+Bugs and ideas go to the [issue tracker](https://github.com/azerty-typefaces/AZ-LetterDigger/issues).
 
 <br>
 

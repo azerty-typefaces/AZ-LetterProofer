@@ -1,6 +1,6 @@
-"""AZ Letter Proofer window: vanilla UI and all Glyphs-side glue.
+"""AZ Letter Digger window: vanilla UI and all Glyphs-side glue.
 
-The scoring itself lives in azletterproofer_engine; this module gathers the
+The scoring itself lives in azletterdigger_engine; this module gathers the
 controls into a SearchConfig, feeds the engine the font's available
 characters, and sends the results to an Edit tab.
 """
@@ -14,7 +14,7 @@ import unicodedata
 from itertools import zip_longest
 from pathlib import Path
 
-import azletterproofer_dice as dice
+import azletterdigger_dice as dice
 from AppKit import (
     NSAppearanceNameAqua,
     NSAppearanceNameDarkAqua,
@@ -49,7 +49,7 @@ from AppKit import (
     NSViewWidthSizable,
     NSZeroRect,
 )
-from azletterproofer_engine import (
+from azletterdigger_engine import (
     Case,
     Position,
     RatingsDatabase,
@@ -64,7 +64,7 @@ from azletterproofer_engine import (
     script_of,
     unicode_char,
 )
-from azletterproofer_settings import (
+from azletterdigger_settings import (
     PREFS,
     hex_to_rgb,
     register_defaults,
@@ -293,7 +293,7 @@ def current_layer_letters(font) -> tuple[str, ...] | None:
     return tuple(letters)
 
 
-class AZLetterProoferWindow:
+class AZLetterDiggerWindow:
     def __init__(self):
         self._dice_node = None  # the live SceneKit dice; None while hidden or off
         self._dice_background = None
@@ -345,7 +345,7 @@ class AZLetterProoferWindow:
     # ------------------------------------------------------------------ UI
 
     def _build_window(self):
-        self.w = Window((WINDOW_WIDTH, 540), "AZ Letter Proofer")
+        self.w = Window((WINDOW_WIDTH, 540), "AZ Letter Digger")
 
         # The dice card on top; hidden, the body card starts at the top margin.
         if self._show_dice:
@@ -737,7 +737,7 @@ class AZLetterProoferWindow:
             if save_dice_color(sender.get()):
                 self.dice_color_saved()
         except Exception:
-            print(f"AZ Letter Proofer dice colour error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger dice colour error:\n{traceback.format_exc()}")
 
     def dice_color_saved(self):
         """Theme the die to the saved colour, picked here or in the Settings
@@ -764,7 +764,7 @@ class AZLetterProoferWindow:
             self._reskin_faces(Glyphs.font, fade=0.0)
             self._set_aura()  # crack lights take the new glow colour
         except Exception:
-            print(f"AZ Letter Proofer dice colour error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger dice colour error:\n{traceback.format_exc()}")
 
     def toggle_extra_settings(self, sender=None):
         """The Extra settings header: fold / unfold its rows. Persisted."""
@@ -853,7 +853,7 @@ class AZLetterProoferWindow:
             self._dice_node = dice_node
             self._set_aura()
         except Exception:
-            print(f"AZ Letter Proofer: dice disabled\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger: dice disabled\n{traceback.format_exc()}")
 
     def _feature_dice_chars(self, font):
         """Characters the active Feature mode points at — these get first
@@ -980,7 +980,7 @@ class AZLetterProoferWindow:
             )
         except Exception:
             self._key_monitor = None
-            print(f"AZ Letter Proofer: key monitor failed\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger: key monitor failed\n{traceback.format_exc()}")
 
     def _remove_key_monitor(self):
         monitor = self._key_monitor
@@ -1017,7 +1017,7 @@ class AZLetterProoferWindow:
             self._interface_callback = self._interface_updated
         except Exception:
             self._interface_callback = None
-            print(f"AZ Letter Proofer glyph tracking off:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger glyph tracking off:\n{traceback.format_exc()}")
         self._interface_updated()
 
     def _current_glyph_letters(self, font):
@@ -1061,7 +1061,7 @@ class AZLetterProoferWindow:
             self._update_language_filter()  # follow the edited glyph, not just typing
             self._update_dice_highlight()
         except Exception:
-            print(f"AZ Letter Proofer glyph tracking error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger glyph tracking error:\n{traceback.format_exc()}")
 
     def _set_letters_placeholder(self, text):
         with contextlib.suppress(Exception):
@@ -1162,7 +1162,7 @@ class AZLetterProoferWindow:
                     fresh = pool.pop() if pool else "a"
                     self._morph_face(font, index, chars[index], fresh, from_role=was)
         except Exception:
-            print(f"AZ Letter Proofer highlight error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger highlight error:\n{traceback.format_exc()}")
 
     def _window_closed(self, sender=None):
         """Window teardown: persist the current UI options, then kill the
@@ -1170,7 +1170,7 @@ class AZLetterProoferWindow:
         try:
             self._save_prefs(self._current_positions())
         except Exception:
-            print(f"AZ Letter Proofer: saving options on close failed\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger: saving options on close failed\n{traceback.format_exc()}")
         self._morph_closed = True
         self.w.dice_color.getNSColorWell().deactivate()  # free the shared colour panel
         # The menu targets wrap bound methods: an ObjC<->Python cycle the GC can't
@@ -1217,7 +1217,7 @@ class AZLetterProoferWindow:
                 frames = build()
             except Exception:
                 frames = None
-                print(f"AZ Letter Proofer async build error:\n{traceback.format_exc()}")
+                print(f"AZ Letter Digger async build error:\n{traceback.format_exc()}")
 
             def deliver():
                 if self._morph_closed:
@@ -1432,7 +1432,7 @@ class AZLetterProoferWindow:
 
             self._build_frames_async(index, build, on_ready)
         except Exception:
-            print(f"AZ Letter Proofer morph error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger morph error:\n{traceback.format_exc()}")
 
     def _char_stamp(self, font, char, size):
         """Stamp callable for a character: the font's own outline in the
@@ -1600,7 +1600,7 @@ class AZLetterProoferWindow:
         try:
             self._set_tumbling(not self._tumbling)
         except Exception:
-            print(f"AZ Letter Proofer tumble toggle error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger tumble toggle error:\n{traceback.format_exc()}")
 
     def is_open(self) -> bool:
         return getattr(self.w, "_window", None) is not None
@@ -1728,7 +1728,7 @@ class AZLetterProoferWindow:
             self.source.remove_wordlist(path.name)
             self._custom_list = None
             Glyphs.defaults[PREFS + "customWordlist"] = None
-            Message(title="AZ Letter Proofer", message=f"No words found in {path.name}.")
+            Message(title="AZ Letter Digger", message=f"No words found in {path.name}.")
         else:
             self._custom_list = path.name
             self._lang_use[path.name] = True
@@ -1856,7 +1856,7 @@ class AZLetterProoferWindow:
         """Folded characters of the tag's member glyphs (`chars`)."""
         if not chars:
             Message(
-                title="AZ Letter Proofer",
+                title="AZ Letter Digger",
                 message=f"No encoded letters carry the tag '{title}'.",
             )
             return frozenset()
@@ -1869,7 +1869,7 @@ class AZLetterProoferWindow:
         try:
             self._rebuild_feature_popup(Glyphs.font)
         except Exception:
-            print(f"AZ Letter Proofer feature popup error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger feature popup error:\n{traceback.format_exc()}")
 
     # -------------------------------------------------------------- run
 
@@ -1878,7 +1878,7 @@ class AZLetterProoferWindow:
             self._run()
         except Exception:
             Glyphs.showMacroWindow()
-            print(f"AZ Letter Proofer error:\n{traceback.format_exc()}")
+            print(f"AZ Letter Digger error:\n{traceback.format_exc()}")
 
     def _run(self):
         font = Glyphs.font
@@ -1886,7 +1886,7 @@ class AZLetterProoferWindow:
         unknown = unknown_glyph_names(str(self.w.letters.get() or ""), self._char_for_name)
         if unknown:
             Message(
-                title="AZ Letter Proofer",
+                title="AZ Letter Digger",
                 message=(
                     f"No encoded glyph named {', '.join(unknown)}. Type letters or "
                     "glyph names separated by spaces, like “a b” or “eacute b”."
@@ -1900,7 +1900,7 @@ class AZLetterProoferWindow:
         languages = self._selected_languages()
         if not languages:
             Message(
-                title="AZ Letter Proofer",
+                title="AZ Letter Digger",
                 message="No language selected — check at least one in the list.",
             )
             return
@@ -1915,7 +1915,7 @@ class AZLetterProoferWindow:
             preferred_groups = (value,)
         elif kind == "tag":
             if font is None:
-                Message(title="AZ Letter Proofer", message="No font open — tag feature skipped.")
+                Message(title="AZ Letter Digger", message="No font open — tag feature skipped.")
             else:
                 tag_members = chars_for_tag(font, value)
                 preferred_chars = self._tag_feature_chars(value, tag_members)
@@ -1946,7 +1946,7 @@ class AZLetterProoferWindow:
         results = find_words(config, self.source, self.ratings)
         if together and not results[0].words:
             Message(
-                title="AZ Letter Proofer",
+                title="AZ Letter Digger",
                 message=f"No word holds all of {' '.join(letters)}. Turn off “All letters "
                 "in each word” for words holding as many as possible, or proof fewer glyphs.",
             )
@@ -1978,16 +1978,16 @@ class AZLetterProoferWindow:
         words = list(dict.fromkeys(word for bucket in results for word in bucket.words))
         if not words and not extra_words:
             Message(
-                title="AZ Letter Proofer",
+                title="AZ Letter Digger",
                 message="No words found. Try loosening the settings.",
             )
             return
         font = Glyphs.font
         if font is None:
-            Message(title="AZ Letter Proofer", message="Open a font first.")
+            Message(title="AZ Letter Digger", message="Open a font first.")
             return
         if note:
-            print(f"AZ Letter Proofer: {note}")
+            print(f"AZ Letter Digger: {note}")
         text = separator.join(words + list(extra_words))
         # The proofed glyph(s), read BEFORE the tab changes the selection.
         focus = tuple(focus) or self._typed_letters() or self._current_glyph_letters(font)
@@ -2032,7 +2032,7 @@ class AZLetterProoferWindow:
         chars = chars_for_tag(font, title) if font is not None else []
         if not chars:
             Message(
-                title="AZ Letter Proofer",
+                title="AZ Letter Digger",
                 message=(
                     f"No encoded glyphs carry the tag '{title}' yet — lock the "
                     "cluster in AZ Classifier (or write its tags) first."

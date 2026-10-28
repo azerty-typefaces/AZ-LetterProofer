@@ -1,4 +1,4 @@
-"""AZ Letter Proofer scoring engine.
+"""AZ Letter Digger scoring engine.
 
 Pure-stdlib port of Get_Best_Words v2: ranks corpus words by typographic
 usefulness for testing a given letter (letter-group diversity, per-letter
